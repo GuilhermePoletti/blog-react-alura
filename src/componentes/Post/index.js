@@ -1,15 +1,39 @@
-import styles from './Post.module.css'
+import "./Post.css";
 
-export default function Post ({ post }) {
-    return (
-        <div className={styles.post}>
-            <img
-                className={styles.capa}
-                src={`/assets/posts/${post.id}/capa.png`} 
-                alt=""
-            />           
-            <h2 className={styles.titulo}> {post.titulo} </h2>
-            <button className={styles.botaoLer}> Ler </button>
-        </div>
-    )
+import { Route, Routes, useParams } from "react-router-dom";
+import posts from "json/posts.json";
+import PostModelo from "componentes/PostModelo";
+import { ReactMarkdown } from "react-markdown/lib/react-markdown";
+import NaoEncontrada from "componentes/NaoEncontrada";
+import PaginaPadrao from "componentes/PaginaPadrao";
+
+export default function Post() {
+  const parametros = useParams();
+
+  const post = posts.find((post) => {
+    return post.id === Number(parametros.id);
+  });
+
+  if (!post) {
+    return <NaoEncontrada />;
+  }
+  return (
+    <Routes>
+      <Route path="/" element={<PaginaPadrao />}>
+        <Route
+          index
+          element={
+            <PostModelo
+              fotoCapa={`/assets/posts/${post.id}/capa.png`}
+              titulo={post.titulo}
+            >
+              <div className="post-markdown-container">
+                <ReactMarkdown>{post.texto}</ReactMarkdown>
+              </div>
+            </PostModelo>
+          }
+        />
+      </Route>
+    </Routes>
+  );
 }
